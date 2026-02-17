@@ -1,8 +1,8 @@
 # GranjaApp
 ## Grupo - Gerenciamento de Granja
-*Nielen Jhose, Rafael Moura e Maria Eduarda* 
+### *Nielen Jhose, Rafael Moura e Maria Eduarda* 
 
-Repositório do projeto acadêmico GranjaApp, desenvolvido com o objetivo de criar uma aplicação web para o controle interno de granjas.
+### Repositório do projeto acadêmico GranjaApp, desenvolvido com o objetivo de criar uma aplicação web para o controle interno de granjas.
 
 
 # Proposta incial do modelo entidade relacionamento

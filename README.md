@@ -4,9 +4,9 @@
 ### Repositório do projeto acadêmico GranjaApp, desenvolvido com o objetivo de criar uma aplicação web para o controle interno de granjas.
 
 ### Equipe:
-* Nielen Jhose
-* Rafael Moura
-* Maria Eduarda
+* _Nielen Jhose_
+* _Rafael Moura_
+* _Maria Eduarda_
 
 
 ### Tecnologias Utilizadas:

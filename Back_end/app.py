@@ -18,12 +18,16 @@ from resources.consumo_lote_diaria_resource import ConsumoLoteDiariaResource
 
 CORS(app)
 
+from helpers.logging_config import setup_logging
+
+setup_logging(app)
+
 # adiciona recurso
 api.add_resource(HomeResources, '/')
 api.add_resource(LoteRacaoResource, '/lote_racao')
 api.add_resource(CorteResource, '/corte', '/corte/<int:id>')
 api.add_resource(PosturaResource, '/postura')
-api.add_resource(LoteFrangoResource, '/lote_frango')
+api.add_resource(LoteFrangoResource, '/lote_frango', '/lote_frango/<int:id>')
 api.add_resource(DespesaResource, '/despesa')
 api.add_resource(TipoDespesaResource, '/tipo_despesa')
 api.add_resource(VendaOvosResource, '/venda_ovos')
@@ -33,4 +37,4 @@ api.add_resource(ControleVacinasResource, '/controle_vacinas')
 api.add_resource(ConsumoLoteDiariaResource, '/consumo_lote_diaria')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)

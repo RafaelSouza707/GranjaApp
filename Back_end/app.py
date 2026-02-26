@@ -34,7 +34,7 @@ api.add_resource(VendaOvosResource, '/venda_ovos')
 api.add_resource(VendaCorteResource, '/venda_corte')
 api.add_resource(MortalidadeResource, '/mortalidade')
 api.add_resource(ControleVacinasResource, '/controle_vacinas')
-api.add_resource(ConsumoLoteDiariaResource, '/consumo_lote_diaria')
+api.add_resource(ConsumoLoteDiariaResource, '/consumo_lote_diaria', '/consumo_lote_diaria/<int:id>')
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

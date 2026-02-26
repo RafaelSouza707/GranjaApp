@@ -17,6 +17,7 @@ class LoteRacaoResource(Resource):
             current_app.logger.info(f"Lote de ração id= {id} encontrado com sucesso")
 
             return lote_schema.dump(lote), 200
+        
         lotes = LoteRacao.query.all()
         current_app.logger.info(f"{len(lotes)} lotes localizados com sucesso")
 

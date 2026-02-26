@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Date, ForeignKey, BigInteger, Numeric
+from sqlalchemy import Date, ForeignKey, BigInteger, Numeric, Identity
 from decimal import Decimal
 from helpers.database import db
 
@@ -7,7 +7,7 @@ from helpers.database import db
 class ConsumoLoteDiaria(db.Model):
     __tablename__ = "consumo_lote_diaria"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(start=1) ,primary_key=True)
     id_lote_frango: Mapped[int] = mapped_column(BigInteger, ForeignKey("lote_frango.id", ondelete="RESTRICT"), nullable=False)
     id_lote_racao: Mapped[int] = mapped_column(BigInteger, ForeignKey("lote_racao.id", ondelete="RESTRICT"), nullable=False)
 

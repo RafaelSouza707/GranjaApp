@@ -10,12 +10,12 @@ lotes_frangos_schema = LoteFrangoSchema(many=True)
 
 class LoteFrangoResource(Resource):
     
-    def get(self, int=None):
+    def get(self, id=None):
         if id:
             lote_frango = LoteFrango.query.get_or_404(id)
             current_app.logger.info(f"Lote de frangos id= {id} encontrado com sucesso")
 
-            return lotes_frangos_schema.dump(lote_frango), 200
+            return lote_frango_schema.dump(lote_frango), 200
         
         current_app.logger.info(f"Buscando todos os lotes de frangos")
         lotes = LoteFrango.query.all()
@@ -65,4 +65,4 @@ class LoteFrangoResource(Resource):
         db.session.commit()
         current_app.logger.info(f"Lote de frangos apagado com sucesso id= {id}")
 
-        return {"message": "Lote de frangos removido com sucesso!"}
+        return {"message": "Lote de frangos removido com sucesso"}

@@ -24,7 +24,7 @@ setup_logging(app)
 
 # adiciona recurso
 api.add_resource(HomeResources, '/')
-api.add_resource(LoteRacaoResource, '/lote_racao')
+api.add_resource(LoteRacaoResource, '/lote_racao', '/lote_racao/<int:id>')
 api.add_resource(CorteResource, '/corte', '/corte/<int:id>')
 api.add_resource(PosturaResource, '/postura')
 api.add_resource(LoteFrangoResource, '/lote_frango', '/lote_frango/<int:id>')

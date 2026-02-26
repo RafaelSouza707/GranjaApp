@@ -1,9 +1,9 @@
 from flask import request, current_app
 from flask_restful import Resource
-from models.lote_frangos import LoteFrango
 from helpers.database import db
 from models.venda_corte import VendaCorte
 from schemas.venda_corte_schema import VendaCorteSchema
+from models.lote_frangos import LoteFrango
 
 venda_corte_schema = VendaCorteSchema()
 vendas_cortes_schema = VendaCorteSchema(many=True)
@@ -13,60 +13,65 @@ class VendaCorteResource(Resource):
 
     def get(self, id=None):
         if id:
-            venda_corte = VendaCorte.query.get(id)
-            
-            if not venda_corte:
-                current_app.logger.warning(f"Venda de corte id = {id} não encontrada")
-                return {"message": f"Venda de corte id = {id} não encontrada"}, 404
-            
-            current_app.logger.info(f"Venda de corte id = {id} encontrada com sucesso")
-            return venda_corte_schema.dump(venda_corte), 200    
+            current_app.logger.info(f"Buscando venda realizada")
+            venda = VendaCorte.query.get_or_404(id)
+
+            return venda_corte_schema.dump(venda)
         
-        vendas_cortes = VendaCorte.query.all()
-        current_app.logger.info("Buscando todas as vendas de corte")    
-        return vendas_cortes_schema.dump(vendas_cortes), 200
+        vendas_ovos = VendaCorte.query.all()
+        current_app.logger.info(f"Buscando vendas realizadas")
+
+        return vendas_cortes_schema.dump(vendas_ovos), 200
     
     def post(self):
-        json_data = request.get_json() 
-        data = venda_corte_schema.load(json_data) 
+        json_data = request.get_json()
+        data = venda_corte_schema.load(json_data)
+
+
+        id_lote_frango = LoteFrango.query.get(data["id_lote_frango"])
+        if not id_lote_frango:
+            current_app.logger.info(f"Lote de frango não encontrado")
+            return {"error": "Lote de frango não encontrado"}, 400
         
-        lote = LoteFrango.query.get(data["id_lote_frango"]) 
-        if not lote:
-            return {"erro": "Lote de frango não existe"}, 400
-        
-        nova_venda_corte = VendaCorte(**data) 
-        db.session.add(nova_venda_corte) 
-        current_app.logger.info("Nova venda de corte sendo inserida")
-        
+        venda = VendaCorte(**data)
+        db.session.add(venda)
+
         db.session.commit()
-        current_app.logger.info(f"Venda de corte inserida com sucesso {nova_venda_corte}")
-        
-        return venda_corte_schema.dump(nova_venda_corte), 201
+
+        current_app.logger.info(f"Venda registrada com sucesso")
+
+        return venda_corte_schema.dump(venda), 201
     
     def put(self, id):
-        venda_corte = VendaCorte.query.get_or_404(id) 
-        json_data = request.get_json() 
-        data = venda_corte_schema.load(json_data) 
+        venda = VendaCorte.query.get_or_404(id)
+        json_data = request.get_json()
+        data = venda_corte_schema.load(json_data)
+
+        current_app.logger.info(f"Atualização do registro do consumo diario do lote")
+
+        lote_frango = LoteFrango.query.get(data["id_lote_frango"])
+        if not lote_frango:
+            current_app.logger.info("Lote de frangos não encontrado")
+            return {"message": "Lote de frangos não encontrado"}
         
-        lote = LoteFrango.query.get(data["id_lote_frango"]) 
-        if not lote:
-            return {"erro": "Lote de frango não existe"}, 400
-        
-        current_app.logger.info(f"Atualizando venda de corte id= {id}")
-        
-        venda_corte.lote_frango_id = data["id_lote_frango"] 
-        venda_corte.data = data["data"] 
-        venda_corte.valor = data["valor"]
-        venda_corte.quilos = data["quilos"]
-        
+        venda.id_lote_frango = data["id_lote_frango"]
+
+        venda.data = data["data"]
+        venda.valor = data["valor"]
+        venda.quantidade_ovos = data["quilos"]
+
         db.session.commit()
-        current_app.logger.info(f"Venda de corte id= {id} atualizada com sucesso")
-        
-        return venda_corte_schema.dump(venda_corte), 200
+
+        current_app.logger.info(f"Venda de ovos atualizada com sucesso id= {id}")
+
+        return venda_corte_schema.dump(venda), 200
     
     def delete(self, id):
-        venda_corte = VendaCorte.query.get_or_404(id) 
-        db.session.delete(venda_corte) 
-        db.session.commit() 
-        current_app.logger.info(f"Venda de corte id= {id} deletada com sucesso")
-        return {"message": f"Venda de corte id= {id} deletada com sucesso"}, 200
+        consumo = VendaCorte.query.get_or_404(id)
+        current_app.logger.info("Deletando venda de ovos")
+        db.session.delete(consumo)
+        db.session.commit()
+        current_app.logger.info(f"Venda de ovos deletetada com sucesso id={id}")
+
+        return {"message": "Venda de ovos excluida com sucesso"}
+

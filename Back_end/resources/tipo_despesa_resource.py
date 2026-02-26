@@ -1,50 +1,73 @@
-from flask import request
+from flask import request, current_app
 from flask_restful import Resource
 from helpers.database import db
+from models.despesa import Despesa
+from schemas.despesa_schema import DespesaSchema
 from models.tipo_despesa import TipoDespesa
-from schemas.tipo_despesa_schema import TipoDespesaSchema
 
-tipo_despesa_schema = TipoDespesaSchema()
-tipos_despesas_schema = TipoDespesaSchema(many=True)
+despesa_schema = DespesaSchema()
+despesas_schema = DespesaSchema(many=True)
 
 
-class TipoDespesaResource(Resource):
+class DespesaResource(Resource):
 
-    def get(self, id = None):
+    def get(self, id=None):
         if id:
-            tipo_despesa = TipoDespesa.query.get_or_404(id)
-            return tipo_despesa_schema.dump(tipo_despesa), 200
-        
-        tipos_despesas = TipoDespesa.query.all()
-        return tipos_despesas_schema.dump(tipos_despesas), 200
+            current_app.logger.info(f"Buscando despesa")
+            despesa = Despesa.query.get_or_404(id)
+
+            return despesa_schema.dump(despesa),200
+
+        despesa = Despesa.query.all()
+        current_app.logger.info(f"Despesas localizadas com sucesso")
+
+        return despesas_schema.dump(despesa), 200
     
     def post(self):
         json_data = request.get_json()
-        if not json_data:
-            return {"message": "Nenhum dado enviado."}, 400
-        
-        data = tipo_despesa_schema.load(json_data)
+        data = despesa_schema.load(json_data)
 
-        novo_tipo = TipoDespesa(**data)
-        db.session.add(novo_tipo)
+        tipo_despesa = TipoDespesa.query.get(data["id_tipo_despesa"])
+        if not tipo_despesa:
+            current_app.logger.warning(f"Tipo de despesa não encontrado")
+            return {"message": "Tipo de despesa não encontrado"}
+
+        despesa = Despesa(**data)
+        db.session.add(despesa)
+
         db.session.commit()
 
-        return tipo_despesa_schema.dump(novo_tipo), 201
+        current_app.logger.info(f"Despesa registrada. {data}")
+
+        return despesa_schema.dump(despesa), 201
     
     def put(self, id):
-        tipo = TipoDespesa.query.get_or_404(id)
+        despesa = Despesa.query.get_or_404(id)
         json_data = request.get_json()
-        data = tipo_despesa_schema.load(json_data)
+        data = despesa_schema.load(json_data)
+        
+        current_app.logger.info(f"Atualização do registro de despesa")
 
-        tipo.nome = data["nome"]
+        tipo_despesa = TipoDespesa.query.get(data["id_tipo_despesa"])
+        if not tipo_despesa:
+            current_app.logger.info(f"Tipo de despesa não localizado")
+            return {"message": "Tipo de despesa não localizado"}
+        
+        despesa.id_tipo_despesa = data["id_tipo_despesa"]
+        despesa.data = data["data"]
+        despesa.valor = data["valor"]
 
         db.session.commit()
 
-        return tipo_despesa_schema.dump(tipo), 200
+        current_app.logger.info(f"Despesa adicionada com sucesso id= {id}")
+
+        return despesa_schema(despesa), 200
     
     def delete(self, id):
-        tipo = TipoDespesa.query.get_or_404(id)
-        db.session.delete(tipo)
+        despesa = Despesa.query.get_or_404(id)
+        current_app.logger.info(f"Deletando despesa")
+        db.session.delete(despesa)
         db.session.commit()
+        current_app.logger.info(f"Despesa deletada id= {id}")
 
-        return {"message": "Tipo de despesa excluído com sucesso!"}, 200
+        return {"message": "Despesa deletado com sucesso"}

@@ -2,6 +2,8 @@ from marshmallow import Schema, fields, validate
 
 
 class LoteFrangoSchema(Schema):
+    id = fields.Int(dump_only=True)
+    
     quantidade_inicial = fields.Integer(required=True)
 
     data_entrada_aves = fields.Date(required=True)
@@ -16,4 +18,5 @@ class LoteFrangoSchema(Schema):
 
     status = fields.String(validate=validate.Length(max=50))
     
+
     peso_medio = fields.Decimal(as_string=True)

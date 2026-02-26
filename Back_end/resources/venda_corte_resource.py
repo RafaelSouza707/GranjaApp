@@ -74,4 +74,3 @@ class VendaCorteResource(Resource):
         current_app.logger.info(f"Venda de ovos deletetada com sucesso id={id}")
 
         return {"message": "Venda de ovos excluida com sucesso"}
-
